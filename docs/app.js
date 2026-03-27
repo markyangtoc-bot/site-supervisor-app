@@ -8,16 +8,16 @@
 
   const STORAGE_KEYS = {
     progress: "site-supervisor-progress-v1",
-    session: "site-supervisor-active-session-v1",
-  };
-
-  const state = {
-    view: "home",
-    session: loadJson(STORAGE_KEYS.session, null),
-    progress: loadJson(STORAGE_KEYS.progress, { questions: {}, sessions: [] }),
+    session: "site-supervisor-active-session-v2",
   };
 
   const maps = buildMaps(DATA);
+
+  const state = {
+    view: "home",
+    session: hydrateSession(loadJson(STORAGE_KEYS.session, null)),
+    progress: loadJson(STORAGE_KEYS.progress, { questions: {}, sessions: [] }),
+  };
 
   render();
 
@@ -44,6 +44,107 @@
       imageById[group.assetFilename] = group;
     });
     return { scenarioById, imageById };
+  }
+
+  function hydrateSession(rawSession) {
+    if (!rawSession || !Array.isArray(rawSession.groups)) {
+      return null;
+    }
+
+    const groups = rawSession.groups
+      .map((group) => hydrateGroup(group))
+      .filter(Boolean);
+
+    if (!groups.length) {
+      return null;
+    }
+
+    const questionIds = groups.flatMap((group) => group.questionIds);
+    const selectedByQuestion = {};
+    const feedbackByQuestion = {};
+
+    questionIds.forEach((questionId) => {
+      if (rawSession.selectedByQuestion && rawSession.selectedByQuestion[questionId]) {
+        selectedByQuestion[questionId] = rawSession.selectedByQuestion[questionId];
+      }
+      if (rawSession.feedbackByQuestion && rawSession.feedbackByQuestion[questionId]) {
+        feedbackByQuestion[questionId] = rawSession.feedbackByQuestion[questionId];
+      }
+    });
+
+    const totalQuestions = groups.reduce((sum, group) => sum + group.questionIds.length, 0);
+    const groupIndex = Math.min(rawSession.groupIndex || 0, groups.length - 1);
+    const questionIndex = Math.min(
+      rawSession.questionIndex || 0,
+      groups[groupIndex].questionIds.length - 1,
+    );
+
+    return {
+      ...rawSession,
+      groups,
+      totalQuestions,
+      groupIndex,
+      questionIndex,
+      selectedByQuestion,
+      feedbackByQuestion,
+    };
+  }
+
+  function hydrateGroup(group) {
+    if (!group || !Array.isArray(group.questionIds) || !group.questionIds.length) {
+      return null;
+    }
+
+    const firstQuestion = DATA.questions[group.questionIds[0]];
+    if (!firstQuestion) {
+      return null;
+    }
+
+    if (group.mode === "image") {
+      const canonical =
+        maps.imageById[group.assetFilename] ||
+        maps.imageById[firstQuestion.imageAssetFilename];
+      if (!canonical) {
+        return null;
+      }
+      return {
+        id: canonical.id,
+        mode: "image",
+        title: canonical.title,
+        commonStem: canonical.commonStem,
+        imagePath: canonical.imagePath,
+        assetFilename: canonical.assetFilename,
+        questionIds: canonical.questionIds,
+      };
+    }
+
+    if (group.mode === "scenario") {
+      const canonical =
+        maps.scenarioById[group.id] ||
+        maps.scenarioById[firstQuestion.scenarioGroup];
+      if (!canonical) {
+        return null;
+      }
+      return {
+        id: canonical.id,
+        mode: "scenario",
+        title: canonical.title,
+        commonStem: canonical.commonStem,
+        imagePath: "",
+        assetFilename: "",
+        questionIds: canonical.questionIds,
+      };
+    }
+
+    return {
+      id: group.id || firstQuestion.id,
+      mode: group.mode || "text",
+      title: group.title || "文字題",
+      commonStem: "",
+      imagePath: "",
+      assetFilename: "",
+      questionIds: group.questionIds.filter((questionId) => Boolean(DATA.questions[questionId])),
+    };
   }
 
   function render() {
