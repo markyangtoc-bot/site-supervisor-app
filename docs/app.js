@@ -742,7 +742,7 @@
           mode: "image",
           title: group.title,
           commonStem: group.commonStem,
-          imagePath: group.imagePath,
+          imagePath: normalizeImagePath(group.imagePath),
           assetFilename: group.assetFilename,
           questionIds: group.questionIds,
         },
