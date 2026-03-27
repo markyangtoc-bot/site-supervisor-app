@@ -41,9 +41,26 @@
       scenarioById[group.id] = group;
     });
     data.imageGroups.forEach((group) => {
-      imageById[group.assetFilename] = group;
+      imageById[group.assetFilename] = {
+        ...group,
+        imagePath: normalizeImagePath(group.imagePath),
+      };
     });
     return { scenarioById, imageById };
+  }
+
+  function normalizeImagePath(path) {
+    const value = String(path || "").trim();
+    if (!value) {
+      return "";
+    }
+    if (value.startsWith("../assets/")) {
+      return `./assets/${value.slice("../assets/".length)}`;
+    }
+    if (value.startsWith("assets/")) {
+      return `./${value}`;
+    }
+    return value;
   }
 
   function hydrateSession(rawSession) {
@@ -112,7 +129,7 @@
         mode: "image",
         title: canonical.title,
         commonStem: canonical.commonStem,
-        imagePath: canonical.imagePath,
+        imagePath: normalizeImagePath(canonical.imagePath),
         assetFilename: canonical.assetFilename,
         questionIds: canonical.questionIds,
       };
