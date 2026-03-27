@@ -8,7 +8,7 @@
 
   const STORAGE_KEYS = {
     progress: "site-supervisor-progress-v1",
-    session: "site-supervisor-active-session-v3",
+    session: "site-supervisor-active-session-v4",
   };
 
   const maps = buildMaps(DATA);
