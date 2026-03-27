@@ -249,6 +249,16 @@
 
         ${continueCard}
 
+        <section class="panel blue">
+          <div class="section-header">
+            <h2 class="section-title">使用說明</h2>
+            <div class="muted small">學習用途提醒</div>
+          </div>
+          <div class="muted small">
+            本系統供考古題練習使用，答案與解析以題庫整理結果為準；法規與實務如有更新，請以主管機關最新公告為準。
+          </div>
+        </section>
+
         <section class="panel">
           <div class="section-header">
             <h2 class="section-title">開始練習</h2>
