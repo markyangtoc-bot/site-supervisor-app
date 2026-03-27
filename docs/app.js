@@ -257,6 +257,11 @@
           <div class="muted small">
             本系統供考古題練習使用，答案與解析以題庫整理結果為準；法規與實務如有更新，請以主管機關最新公告為準。
           </div>
+          <div class="muted small" style="margin-top:8px;">
+            如發現考題、答案、解析或圖卡有問題，請截圖並寄信到
+            <a href="mailto:markyang.toc@gmail.com">markyang.toc@gmail.com</a>
+            說明。
+          </div>
         </section>
 
         <section class="panel">
@@ -486,6 +491,14 @@
             <div class="analysis-item">
               <strong>後續可加</strong>
               <div class="muted small">模擬考、近年題優先、老師補充解析、弱點自動加權出題。</div>
+            </div>
+            <div class="analysis-item">
+              <strong>問題回報</strong>
+              <div class="muted small">
+                如發現考題、答案、解析或圖卡有問題，請截圖並寄信到
+                <a href="mailto:markyang.toc@gmail.com">markyang.toc@gmail.com</a>
+                說明。
+              </div>
             </div>
           </div>
         </section>
