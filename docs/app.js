@@ -8,7 +8,7 @@
 
   const STORAGE_KEYS = {
     progress: "site-supervisor-progress-v1",
-    session: "site-supervisor-active-session-v2",
+    session: "site-supervisor-active-session-v3",
   };
 
   const maps = buildMaps(DATA);
@@ -43,10 +43,18 @@
     data.imageGroups.forEach((group) => {
       imageById[group.assetFilename] = {
         ...group,
-        imagePath: normalizeImagePath(group.imagePath),
+        imagePath: resolveImagePath(group.assetFilename, group.imagePath),
       };
     });
     return { scenarioById, imageById };
+  }
+
+  function resolveImagePath(assetFilename, fallbackPath) {
+    const filename = String(assetFilename || "").trim();
+    if (filename) {
+      return `./assets/question-cards/${filename}`;
+    }
+    return normalizeImagePath(fallbackPath);
   }
 
   function normalizeImagePath(path) {
@@ -129,7 +137,7 @@
         mode: "image",
         title: canonical.title,
         commonStem: canonical.commonStem,
-        imagePath: normalizeImagePath(canonical.imagePath),
+        imagePath: resolveImagePath(canonical.assetFilename, canonical.imagePath),
         assetFilename: canonical.assetFilename,
         questionIds: canonical.questionIds,
       };
@@ -742,7 +750,7 @@
           mode: "image",
           title: group.title,
           commonStem: group.commonStem,
-          imagePath: normalizeImagePath(group.imagePath),
+          imagePath: resolveImagePath(group.assetFilename, group.imagePath),
           assetFilename: group.assetFilename,
           questionIds: group.questionIds,
         },
